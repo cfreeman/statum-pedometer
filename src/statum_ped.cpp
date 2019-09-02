@@ -36,47 +36,52 @@ State SampleMode(const State_struct *currentState, unsigned long currentTime, MP
                     (imu->getGyroY_rads() * imu->getGyroY_rads()) +
                     (imu->getGyroZ_rads() * imu->getGyroZ_rads()));
 
-  // Send raw data to our server at a periodic interval.
+
   if (currentTime - currentState->lastDataSend > DATA_SEND_PERIOD) {
-    State newState;
+    // Send raw data to our server at a periodic interval.
+    String url = String(SERVER_ADDR) + "dat?id="+SENSOR_ID+
+                                       "&ax="+convert(imu->getAccelX_mss(), MSS_TO_GFORCE)+
+                                       "&ay="+convert(imu->getAccelY_mss(), MSS_TO_GFORCE)+
+                                       "&az="+convert(imu->getAccelZ_mss(), MSS_TO_GFORCE)+
+                                       "&am="+convert(currentState->maxAccMag, MSS_TO_GFORCE)+
+                                       "&gx="+convert(imu->getGyroX_rads(), RADS_TO_RPM)+
+                                       "&gy="+convert(imu->getGyroY_rads(), RADS_TO_RPM)+
+                                       "&gz="+convert(imu->getGyroZ_rads(), RADS_TO_RPM)+
+                                       "&rm="+convert(currentState->maxRotMag, RADS_TO_RPM);
 
-    newState.url = String(SERVER_ADDR) + "dat?id="+SENSOR_ID+
-                                            "&ax="+convert(imu->getAccelX_mss(), MSS_TO_GFORCE)+
-                                            "&ay="+convert(imu->getAccelY_mss(), MSS_TO_GFORCE)+
-                                            "&az="+convert(imu->getAccelZ_mss(), MSS_TO_GFORCE)+
-                                            "&am="+convert(magA, MSS_TO_GFORCE)+
-                                            "&gx="+convert(imu->getGyroX_rads(), RADS_TO_RPM)+
-                                            "&gy="+convert(imu->getGyroY_rads(), RADS_TO_RPM)+
-                                            "&gz="+convert(imu->getGyroZ_rads(), RADS_TO_RPM)+
-                                            "&rm="+convert(magR, RADS_TO_RPM);
-
-    Serial.println(newState.url);
-    newState.lastStep = currentState->lastStep;
-    newState.lastDataSend = currentTime;
-    newState.update = &BroadcastMode;
-
-    return newState;
+    return State{url,
+                 currentState->steps,
+                 currentState->lastStep,
+                 currentTime,
+                 0.0f,
+                 0.0f,
+                 &BroadcastMode};
   }
 
-  // OPTIONAL: enforce minimum time between steps.
-  if (magA > STEP_THRESH) {
-    //Sends step information to our server
-    State newState;
+  if ((magA > STEP_THRESH) && ((currentTime - currentState->lastStep) > MIN_STEP_DURATION)) {
+    //Step detected, inform the server.
+    String url = String(SERVER_ADDR) + "step?id="+SENSOR_ID+
+                                           "&s=" + (currentState->steps + 1);
 
-    newState.steps = currentState->steps + 1;
-    newState.url = String(SERVER_ADDR) + "step?s=" + newState.steps;
-    newState.lastStep = currentTime;
-    newState.lastDataSend = currentState->lastDataSend;
-    newState.update = &BroadcastMode;
-
-    return newState;
+    return State{url,
+                 currentState->steps + 1,
+                 currentTime,
+                 currentState->lastDataSend,
+                 max(magA, currentState->maxAccMag),
+                 max(magR, currentState->maxRotMag),
+                 &BroadcastMode};
   }
 
-  return *currentState;
+  return State{currentState->url,
+               currentState->steps,
+               currentState->lastStep,
+               currentState->lastDataSend,
+               max(magA, currentState->maxAccMag),
+               max(magR, currentState->maxRotMag),
+               currentState->update};
 }
 
 State BroadcastMode(const State_struct *currentState, unsigned long currentTime, MPU9250 *imu) {
-  // Sends raw data to our server every 500ms.
   WiFiClient client;
   HTTPClient http;
 
@@ -84,10 +89,11 @@ State BroadcastMode(const State_struct *currentState, unsigned long currentTime,
   http.GET();
   http.end();
 
-  State newState;
-  newState.lastStep = currentState->lastStep;
-  newState.lastDataSend = currentState->lastDataSend;
-  newState.update = &SampleMode;
-
-  return newState;
+  return State{"",
+               currentState->steps,
+               currentState->lastStep,
+               currentState->lastDataSend,
+               currentState->maxAccMag,
+               currentState->maxRotMag,
+               &SampleMode};
 }

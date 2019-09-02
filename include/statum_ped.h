@@ -30,6 +30,9 @@ typedef struct State_struct {
   unsigned long lastStep;
   unsigned long lastDataSend;
 
+  float maxAccMag;
+  float maxRotMag;
+
   StateFn update;
 } State;
 

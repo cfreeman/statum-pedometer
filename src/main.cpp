@@ -44,14 +44,10 @@ void setup() {
     Serial.println(status);
     while(1) {}
   }
-  // setting the accelerometer full scale range to +/-8G
   IMU.setAccelRange(MPU9250::ACCEL_RANGE_4G);
-  // setting the gyroscope full scale range to +/-500 deg/s
   IMU.setGyroRange(MPU9250::GYRO_RANGE_500DPS);
-  // setting DLPF bandwidth to 20 Hz
-  IMU.setDlpfBandwidth(MPU9250::DLPF_BANDWIDTH_20HZ);
-  // setting SRD to 19 for a 50 Hz update rate
-  IMU.setSrd(19);
+  IMU.setDlpfBandwidth(MPU9250::DLPF_BANDWIDTH_20HZ); // setting DLPF bandwidth to 20 Hz
+  IMU.setSrd(19);                                     // setting SRD to 19 for a 50 Hz update rate
   Serial.println(" Done!");
 
   // Connect to WiFi.
@@ -68,16 +64,11 @@ void setup() {
      delay(500);
      Serial.print(".");
   }
-
-  // // Init UDP to broadcast OSC messages.
-  // Udp.begin(localPort);
   Serial.println(" Done!");
 
   // Initalise the state of the Statum pedometer.
-  state.steps = 0;
-  state.lastStep = millis();
-  state.lastDataSend = state.lastStep;
-  state.update = &SampleMode;
+  unsigned long t = millis();
+  state = State{"", 0, t, t, 0.0f, 0.0f, &SampleMode};
 }
 
 
@@ -85,22 +76,10 @@ void loop() {
   state = state.update(&state, millis(), &IMU);
   Serial.println("loop");
 
-  // TODO: Each sample call store the largest value to transmit.
   // TODO: Design Board.
+  // TODO: Tweak step thresholds.
 
   // display the data
-  // Serial.print(IMU.getAccelX_mss(),6);
-  // Serial.print("\t");
-  // Serial.print(IMU.getAccelY_mss(),6);
-  // Serial.print("\t");
-  // Serial.print(IMU.getAccelZ_mss(),6);
-  // Serial.print("\t");
-  // Serial.print(IMU.getGyroX_rads(),6);
-  // Serial.print("\t");
-  // Serial.print(IMU.getGyroY_rads(),6);
-  // Serial.print("\t");
-  // Serial.print(IMU.getGyroZ_rads(),6);
-  // Serial.print("\t");
   // Serial.print(IMU.getMagX_uT(),6);
   // Serial.print("\t");
   // Serial.print(IMU.getMagY_uT(),6);
