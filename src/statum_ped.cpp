@@ -40,7 +40,8 @@ State SampleMode(const State_struct *currentState, unsigned long currentTime, MP
   if (currentTime - currentState->lastDataSend > DATA_SEND_PERIOD) {
     State newState;
 
-    newState.url = String(SERVER_ADDR) + "dat?ax="+convert(imu->getAccelX_mss(), MSS_TO_GFORCE)+
+    newState.url = String(SERVER_ADDR) + "dat?id="+SENSOR_ID+
+                                            "&ax="+convert(imu->getAccelX_mss(), MSS_TO_GFORCE)+
                                             "&ay="+convert(imu->getAccelY_mss(), MSS_TO_GFORCE)+
                                             "&az="+convert(imu->getAccelZ_mss(), MSS_TO_GFORCE)+
                                             "&am="+convert(magA, MSS_TO_GFORCE)+

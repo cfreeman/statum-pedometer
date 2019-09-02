@@ -22,6 +22,7 @@
 #define SSID "********"                       // EditThis: The name of your WiFi access point.
 #define PASSWORD "**********"                 // EditThis: The password of your WiFi access point.
 #define SERVER_ADDR "**********************"  // EditThis: The destination server for sensor data.
+#define SENSOR_ID "A"						  // EditThis: The identifier to use when notifying the server of the data source.
 #define DATA_SEND_PERIOD 500                  // EditThis: The period in milliseconds to send data to the server.
 #define STEP_THRESH 1.0                       // EditThis: The threshold in m/s^2 that triggers a step to be detected.
 #define DECLINATION_ANGLE -0.11               // EditThis: The declination angle for your current location.
