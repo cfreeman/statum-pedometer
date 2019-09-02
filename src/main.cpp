@@ -26,8 +26,6 @@
 #include "statum_ped.h"
 #include "configuration.h"
 
-
-
 MPU9250 IMU(Wire, 0x68);
 
 State state; // The current state of the statum pedometer.
@@ -88,9 +86,6 @@ void loop() {
   Serial.println("loop");
 
   // TODO: Each sample call store the largest value to transmit.
-  // TODO: Test http request & build server code.
-  // TODO: Implement step http request.
-  // TODO: Implement data http request.
   // TODO: Design Board.
 
   // display the data

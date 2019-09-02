@@ -28,22 +28,26 @@ int convert(float value, float factor) {
 State SampleMode(const State_struct *currentState, unsigned long currentTime, MPU9250 *imu) {
   imu->readSensor();
 
-  float mag = sqrt((imu->getAccelX_mss() * imu->getAccelX_mss()) +
-                   (imu->getAccelY_mss() * imu->getAccelY_mss()) +
-                   (imu->getAccelZ_mss() * imu->getAccelZ_mss()));
+  float magA = sqrt((imu->getAccelX_mss() * imu->getAccelX_mss()) +
+                    (imu->getAccelY_mss() * imu->getAccelY_mss()) +
+                    (imu->getAccelZ_mss() * imu->getAccelZ_mss()));
+
+  float magR = sqrt((imu->getGyroX_rads() * imu->getGyroX_rads()) +
+                    (imu->getGyroY_rads() * imu->getGyroY_rads()) +
+                    (imu->getGyroZ_rads() * imu->getGyroZ_rads()));
 
   // Send raw data to our server at a periodic interval.
   if (currentTime - currentState->lastDataSend > DATA_SEND_PERIOD) {
     State newState;
 
-    // TODO: dat?ax=<val>&ay=<val>&az=<val>&gx=<val>&gy=<val>&gz=<val>&h=<val>
     newState.url = String(SERVER_ADDR) + "dat?ax="+convert(imu->getAccelX_mss(), MSS_TO_GFORCE)+
                                             "&ay="+convert(imu->getAccelY_mss(), MSS_TO_GFORCE)+
                                             "&az="+convert(imu->getAccelZ_mss(), MSS_TO_GFORCE)+
-                                            "&am="+convert(mag, MSS_TO_GFORCE)+
+                                            "&am="+convert(magA, MSS_TO_GFORCE)+
                                             "&gx="+convert(imu->getGyroX_rads(), RADS_TO_RPM)+
                                             "&gy="+convert(imu->getGyroY_rads(), RADS_TO_RPM)+
-                                            "&gz="+convert(imu->getGyroZ_rads(), RADS_TO_RPM);
+                                            "&gz="+convert(imu->getGyroZ_rads(), RADS_TO_RPM)+
+                                            "&rm="+convert(magR, RADS_TO_RPM);
 
     Serial.println(newState.url);
     newState.lastStep = currentState->lastStep;
@@ -54,7 +58,7 @@ State SampleMode(const State_struct *currentState, unsigned long currentTime, MP
   }
 
   // OPTIONAL: enforce minimum time between steps.
-  if (mag > STEP_THRESH) {
+  if (magA > STEP_THRESH) {
     //Sends step information to our server
     State newState;
 
@@ -75,7 +79,7 @@ State BroadcastMode(const State_struct *currentState, unsigned long currentTime,
   WiFiClient client;
   HTTPClient http;
 
-  http.begin(client, SERVER_ADDR);
+  http.begin(client, currentState->url);
   http.GET();
   http.end();
 
