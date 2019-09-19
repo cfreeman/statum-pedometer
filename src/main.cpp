@@ -74,19 +74,7 @@ void setup() {
 
 void loop() {
   state = state.update(&state, millis(), &IMU);
-  Serial.println("loop");
 
-  // TODO: Design Board.
   // TODO: Tweak step thresholds.
-
-  // display the data
-  // Serial.print(IMU.getMagX_uT(),6);
-  // Serial.print("\t");
-  // Serial.print(IMU.getMagY_uT(),6);
-  // Serial.print("\t");
-  // Serial.print(IMU.getMagZ_uT(),6);
-  // Serial.print("\t");
-  // Serial.println(IMU.getTemperature_C(),6);
-
   delay(100);
 }

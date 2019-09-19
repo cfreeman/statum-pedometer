@@ -22,7 +22,7 @@
 #include "configuration.h"
 
 int convert(float value, float factor) {
-  return (int)((value * factor) * 100.0f);
+  return (int)((value * factor) * 10.0f);
 }
 
 State SampleMode(const State_struct *currentState, unsigned long currentTime, MPU9250 *imu) {

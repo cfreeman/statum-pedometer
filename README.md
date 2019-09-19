@@ -8,7 +8,7 @@ cues one a single step.
 ## Compiling:
 
 1. Install [PlatformIO](https://docs.platformio.org/en/latest/installation.html).
-2. Download or git clone CloudOLight source code.
+2. Download or git clone statum-ped source code.
 3. Open a terminal and navigate to the source code location.
 4. Copy the config template `$cp configuration-template.h configuration.h`
 5. Edit the configuration.h as necessary.
