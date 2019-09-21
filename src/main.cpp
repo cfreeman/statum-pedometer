@@ -67,7 +67,7 @@ void setup() {
 
   // Initalise the state of the Statum pedometer.
   unsigned long t = millis();
-  state = State{"", 0, t, t, 0.0f, 0.0f, &SampleMode};
+  state = State{"", false, 0, t, t, 0.0f, 0.0f, &SampleMode};
 }
 
 

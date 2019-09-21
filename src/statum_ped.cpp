@@ -50,6 +50,7 @@ State SampleMode(const State_struct *currentState, unsigned long currentTime, MP
                                        "&rm="+convert(currentState->maxRotMag, RADS_TO_RPM);
 
     return State{url,
+                 currentState->stepStarted,
                  currentState->steps,
                  currentState->lastStep,
                  currentTime,
@@ -58,12 +59,25 @@ State SampleMode(const State_struct *currentState, unsigned long currentTime, MP
                  &BroadcastMode};
   }
 
-  if ((magA > STEP_THRESH) && ((currentTime - currentState->lastStep) > MIN_STEP_DURATION)) {
-    //Step detected, inform the server.
+  if (!currentState->stepStarted && (magA > STEP_THRESH) && ((currentTime - currentState->lastStep) > MIN_STEP_DURATION)) {
+    //Step started
+    return State{currentState->url,
+                 true,
+                 currentState->steps,
+                 currentState->lastStep,
+                 currentTime,
+                 0.0f,
+                 0.0f,
+                 &BroadcastMode};
+  }
+
+  if (currentState->stepStarted && (magA < STEP_THRESH)) {
+    //Step finished, inform the server.
     String url = String(SERVER_ADDR) + "step?id="+SENSOR_ID+
                                            "&s=" + (currentState->steps + 1);
 
     return State{url,
+                 false,
                  currentState->steps + 1,
                  currentTime,
                  currentState->lastDataSend,
@@ -73,6 +87,7 @@ State SampleMode(const State_struct *currentState, unsigned long currentTime, MP
   }
 
   return State{currentState->url,
+               currentState->stepStarted,
                currentState->steps,
                currentState->lastStep,
                currentState->lastDataSend,
@@ -90,6 +105,7 @@ State BroadcastMode(const State_struct *currentState, unsigned long currentTime,
   http.end();
 
   return State{"",
+               currentState->stepStarted,
                currentState->steps,
                currentState->lastStep,
                currentState->lastDataSend,

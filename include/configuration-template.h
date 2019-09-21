@@ -24,10 +24,8 @@
 #define SERVER_ADDR "**********************"  // EditThis: The destination server for sensor data.
 #define SENSOR_ID "A"						  // EditThis: The identifier to use when notifying the server of the data source.
 #define DATA_SEND_PERIOD 500                  // EditThis: The period in milliseconds to send data to the server.
-#define STEP_THRESH 1.1f                      // EditThis: The threshold in m/s^2 that triggers a step to be detected.
-#define MIN_STEP_DURATION 240				  // EditThis: The minimum time a step can take in milliseconds. 240ms -> 250 steps per minute.
-#define DECLINATION_ANGLE -0.11               // EditThis: The declination angle for your current location.
-                                              //           Find yours here: http://www.magnetic-declination.com/
+#define STEP_THRESH 11.14f                    // EditThis: The threshold in m/s^2 that triggers a step to be detected.
+#define MIN_STEP_DURATION 440				  // EditThis: The minimum time a step can take in milliseconds. 240ms -> 250 steps per minute.
 
 #define MSS_TO_GFORCE 0.1020408163
 #define RADS_TO_RPM 9.5492965855

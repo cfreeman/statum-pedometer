@@ -26,6 +26,7 @@ typedef struct State_struct (*StateFn)(const struct State_struct *currentState, 
 typedef struct State_struct {
   String url;
 
+  bool stepStarted;
   unsigned long steps;
   unsigned long lastStep;
   unsigned long lastDataSend;
