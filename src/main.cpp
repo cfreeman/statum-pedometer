@@ -22,7 +22,6 @@
 
 #include <ESP8266WiFi.h>
 
-#include "position.h"
 #include "statum_ped.h"
 #include "configuration.h"
 
