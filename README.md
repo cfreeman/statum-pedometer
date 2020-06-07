@@ -15,14 +15,6 @@ cues one a single step.
 6. Build the project: `$platformio run --target upload`
 
 
-## Hardware Notes:
-Power:
-D1: 200mA
-Accel Sensor: 1mA
-
-Heart Rate: 10mA
-
-
 ## License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
